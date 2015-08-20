@@ -32,6 +32,14 @@ class GalleryBrowsePhotoViewController: UIViewController, UIScrollViewDelegate {
         return scrollView
     }()
     
+    lazy var pageControl: UIPageControl = {
+        let pageControl = UIPageControl(frame: CGRect(x: 0, y: self.view.bounds.height-20, width: self.view.bounds.width, height: 20))
+        pageControl.currentPage = 0
+        pageControl.backgroundColor = UIColor.blackColor()
+        
+        return pageControl
+        }()
+    
     var currentPage: Int {
         let pageWidth = scrollView.frame.size.width
         let page = Int(floor((scrollView.contentOffset.x * 2.0 + pageWidth) / (pageWidth * 2.0)))
@@ -87,6 +95,9 @@ class GalleryBrowsePhotoViewController: UIViewController, UIScrollViewDelegate {
             }
             scrollView.contentSize = CGSize(width: CGFloat(imageCount) * scrollView.bounds.width, height: scrollView.bounds.height)
             layedOutScrollView = true
+            
+            //keep the total num of pages for pageControl
+            pageControl.numberOfPages = imageCount
                         
             // Modify start page
             scrollView.contentOffset = CGPoint(x: CGFloat(startPage) * scrollView.bounds.width, y: 0)
@@ -103,6 +114,8 @@ class GalleryBrowsePhotoViewController: UIViewController, UIScrollViewDelegate {
         let attributeDict = [NSForegroundColorAttributeName: UIColor.whiteColor()]
         navigationController!.navigationBar.titleTextAttributes = attributeDict
         view.addSubview(scrollView)
+        //add pageControl to the view
+        view.addSubview(pageControl)
         layout(scrollView) { v in
             v.left == v.superview!.left
             v.right == v.superview!.right
@@ -186,6 +199,10 @@ class GalleryBrowsePhotoViewController: UIViewController, UIScrollViewDelegate {
     }
     
     func loadVisiblePages() {
+        
+        // Update the page control with the current page
+        pageControl.currentPage = currentPage
+        
         // Work out which pages you want to load
         let firstPage = currentPage - 1
         let lastPage = currentPage + 1
